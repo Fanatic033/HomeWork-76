@@ -1,6 +1,7 @@
 import React, {FormEvent, useState} from 'react';
-import {newMessage} from '../../types.ts';
+import {newMessage} from '../../../types.ts';
 import {Button, Grid, TextField} from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 interface Props {
   onSendMessage: (message: newMessage) => void;
@@ -54,7 +55,8 @@ const SendMessage: React.FC<Props> = ({onSendMessage}) => {
           type="submit"
           variant="contained"
         >
-          <span>Send</span>
+          <span style={{marginRight: '20px'}}>Send</span>
+          <SendIcon/>
         </Button>
       </Grid>
     </Grid>

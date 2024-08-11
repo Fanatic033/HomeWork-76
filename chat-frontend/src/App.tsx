@@ -2,8 +2,8 @@ import './App.css'
 import {AxiosError} from 'axios';
 import {useEffect, useState} from 'react';
 import {Message, newMessage} from './types.ts';
-import Messages from './Components/Messages/Messages.tsx';
-import SendMessage from './Components/Messages/SendMessage.tsx';
+import Messages from './features/Components/Messages/Messages.tsx';
+import SendMessage from './features/Components/Messages/SendMessage.tsx';
 import axiosApi from './axiosApi.ts';
 
 
@@ -14,7 +14,7 @@ const App = () => {
     const fetchData = async () => {
         try {
             const result = await axiosApi.get("/messages");
-            setPosts(result.data);
+            setPosts(result.data.reverse());
         } catch (error) {
           console.error(error);
         }
@@ -38,16 +38,16 @@ const App = () => {
         return <div>{error.message}</div>;
     } else
         return (
-            <>
-                <div className="flex-fill">
-                    {posts.map(post => (
-                        <Messages post={post} key={post.id}/>
-                    ))}
-                </div>
-                <div className='ms-5'>
-                    <SendMessage onSendMessage={sendNewMessage}/>
-                </div>
-            </>
+          <>
+            <div style={{flexBasis:900}}>
+              {posts.map(post => (
+                <Messages post={post} key={post.id}/>
+              ))}
+            </div>
+            <div className='ms-5'>
+              <SendMessage onSendMessage={sendNewMessage}/>
+            </div>
+          </>
         )
 }
 
