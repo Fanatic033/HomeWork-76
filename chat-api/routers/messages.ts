@@ -1,5 +1,5 @@
 import express from 'express';
-import {IMessage, messageMutation} from '../types';
+import {messageMutation} from '../types';
 import fileDb from '../fileDb';
 
 const messageRouter = express.Router();
@@ -17,8 +17,27 @@ messageRouter.post('/', async (req, res) => {
 })
 
 messageRouter.get('/', async (req, res) => {
-  const messages = await fileDb.getItems();
-  res.send(messages.slice(-30))
+  const queryDate = req.query.datetime as string;
+  if (queryDate) {
+    const date = new Date(queryDate);
+
+    if (isNaN(date.getDate())) {
+      return res.status(400).send('Invalid date');
+    }
+    const messages = await fileDb.getItems();
+
+    const lastMessages = messages.filter((message) => {
+      const messageDate = new Date(message.datetime);
+      return messageDate > date;
+    })
+    return res.send(lastMessages)
+  } else {
+    const messages = await fileDb.getItems();
+    res.send(messages.slice(-30))
+  }
+
+
 })
+
 
 export default messageRouter;
