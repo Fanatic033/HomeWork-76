@@ -11,13 +11,13 @@ interface Props {
 dayjs.extend(isYesterday);
 
 const Messages: React.FC<Props> = ({post}) => {
-  const dateMessage = dayjs(post.datetime)
-let formattedDate
+  const dateMessage = dayjs(post.datetime);
+  let formattedDate;
 
-  if(dateMessage.isYesterday()){
-     formattedDate = 'Добавлено вчера'
-  }else{
-     formattedDate = dateMessage.format('DD.MM.YYYY HH:mm')
+  if (dateMessage.isYesterday()) {
+    formattedDate = 'Добавлено вчера'
+  } else {
+    formattedDate = dateMessage.format('DD.MM.YYYY HH:mm')
   }
 
   return (
@@ -48,7 +48,7 @@ let formattedDate
         <Typography variant="body1"
                     color="textSecondary"
         >
-           {formattedDate}
+          {formattedDate}
         </Typography>
       </CardContent>
     </Card>

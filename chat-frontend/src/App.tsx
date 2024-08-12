@@ -8,47 +8,56 @@ import axiosApi from './axiosApi.ts';
 
 
 const App = () => {
-    const [posts, setPosts] = useState<Message[]>([]);
-    const [error, setError] = useState<Error | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [error, setError] = useState<Error | null>(null);
 
-    const fetchData = async () => {
-        try {
-            const result = await axiosApi.get("/messages");
-            setPosts(result.data.reverse());
-        } catch (error) {
-          console.error(error);
-        }
+
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const response = await axiosApi.get('/messages');
+      setMessages(response.data.reverse());
     };
-    useEffect(() => {
-        void fetchData();
-        const threeSecond = setInterval(fetchData, 3000);
-        return () => clearInterval(threeSecond);
-    }, []);
 
-    const sendNewMessage = async (newMessage: newMessage) => {
-        try {
-           await axiosApi.post('/messages' ,newMessage)
-            void fetchData()
-        } catch (error) {
-            setError(error as AxiosError);
+    void fetchMessages();
+
+    const interval = setInterval(async () => {
+      if (messages.length > 0) {
+        const lastMessageDate = messages[messages.length - 1].datetime;
+        const response = await axiosApi.get(`/messages?datetime=${lastMessageDate}`);
+        if (response.data.length > 0) {
+          setMessages((prevMessages) => [...prevMessages, ...response.data]);
         }
-    }
+      }
+    }, 3000);
 
-    if (error) {
-        return <div>{error.message}</div>;
-    } else
-        return (
-          <>
-            <div style={{flexBasis:900}}>
-              {posts.map(post => (
-                <Messages post={post} key={post.id}/>
-              ))}
-            </div>
-            <div className='ms-5'>
-              <SendMessage onSendMessage={sendNewMessage}/>
-            </div>
-          </>
-        )
+    return () => clearInterval(interval);
+  }, [messages]);
+
+  const sendNewMessage = async (newMessage: newMessage) => {
+    try {
+      const response = await axiosApi.post('/messages', newMessage);
+      setMessages((prevMessages) => [...prevMessages, response.data]);
+    } catch (error) {
+      setError(error as AxiosError);
+    }
+  };
+
+  if (error) {
+    return <div>{error.message}</div>;
+  } else
+    return (
+      <>
+        <div style={{flexBasis: 900}}>
+          {messages.map(message => (
+            <Messages post={message} key={message.id}/>
+          ))}
+        </div>
+        <div className="ms-5">
+          <SendMessage onSendMessage={sendNewMessage}/>
+        </div>
+      </>
+    )
 }
 
 export default App
